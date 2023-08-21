@@ -14,8 +14,22 @@ class CalendarController extends Controller
         $token = $request->header('authorization');
         $token = str_replace('Bearer ', '', $token);
 
-        $graphClient = new GraphGatewayClient($token, '/me/calendars');
-        $calendar = $graphClient->get()->getBody();
+        /**
+         *
+         * message: under this code to get data calendar when error send message error
+         *
+        */
+        try {
+            $graphClient = new GraphGatewayClient($token, '/me/calendars');
+            $calendar = $graphClient->get()->getBody();
+        } catch(Exception $e) {
+            return response()->json([
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'error' => true,
+            ], $e->getCode() != 0 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
+        }
+
         return response()->json($calendar);
     }
 
@@ -27,18 +41,26 @@ class CalendarController extends Controller
             "name" => $request->input('name'),
         ];
 
-        $createCalendar = new GraphGatewayClient($token, '/me/calendars', $scopes);
-        if($createCalendar->post()) {
+        /**
+         *
+         * message: under this code to create data calendar when error send message error
+         *
+        */
+        try {
+            $createCalendar = new GraphGatewayClient($token, '/me/calendars', $scopes);
+            $createCalendar->post();
+        } catch(Exception $e) {
             return response()->json([
-                'message' => 'Calendar has been Created',
-                'error' => false
-            ], Response::HTTP_CREATED);
+                'message' => $e->getMessage(),
+                'code' => $e->getCode(),
+                'error' => true,
+            ], $e->getCode() != 0 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
 
         return response()->json([
-            'message' => 'Something Error...!',
+            'message' => 'Data has been created',
             'error' => false
-        ], Response::HTTP_BAD_REQUEST);
+        ], Response::HTTP_CREATED);
     }
 
     public function show(Request $request) {

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\CalendarController;
+use App\Http\Controllers\Files\DriveController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -28,6 +29,10 @@ Route::group(['prefix' => 'v1'], function() {
     Route::patch('calendar/{id}/update', [CalendarController::class, 'update'])->name('microsoft.calendar.update');
     Route::delete('calendar/{id}/delete', [CalendarController::class, 'delete'])->name('microsoft.calendar.delete');
 
+    // Drive Route API
+    Route::get('drive', [DriveController::class, 'index'])->name('microsoft.drive');
+    Route::get('drive/{id}', [DriveController::class, 'show'])->name('microsoft.drive.show');
+    Route::get('drive/current/items', [DriveController::class, 'itemsByCurrentRootFolder'])->name('microsoft.drive.listitemsbycurrentfolder');
 
     Route::get('me', [ProfileController::class, 'me'])->name('microsoft.me');
     Route::get('mail', [ProfileController::class, 'mail'])->name('microsoft.mail');
