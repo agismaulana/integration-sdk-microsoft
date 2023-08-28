@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Files;
+namespace App\Http\Controllers\Chat;
 
 use App\Gateway\GraphGatewayClient;
 use App\Http\Controllers\Controller;
@@ -8,14 +8,15 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class DriveController extends Controller
+class ChatController extends Controller
 {
     public function index(Request $request) {
         $token = $request->header('authorization');
         $token = str_replace('Bearer ', '', $token);
 
         try {
-            $graphClient = new GraphGatewayClient($token, '/me/drives');
+            // $graphClient = new GraphGatewayClient($token, '/users/'.$userId.'/chats');
+            $graphClient = new GraphGatewayClient($token, '/me/chats');
             $drive = $graphClient->get()->getBody();
         } catch(Exception $e) {
             return response()->json([
@@ -32,49 +33,58 @@ class DriveController extends Controller
         $token = str_replace('Bearer ', '', $token);
 
         try {
-            $graphClient = new GraphGatewayClient($token, '/drives/'.$request->route('id'));
-            $drive = $graphClient->get()->getBody();
+            $graphClient = new GraphGatewayClient($token, '/me/chats/'.$request->route('chatId'));
+            $chat = $graphClient->get()->getBody();
         } catch(Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
-                'error' => true
+                'error' => true,
             ], $e->getCode() != 0 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
 
-        return response()->json($drive);
+        return response()->json($chat);
     }
 
-    public function itemsByCurrentRootFolder(Request $request) {
+    public function allMessages(Request $request) {
         $token = $request->header('authorization');
         $token = str_replace('Bearer ', '', $token);
 
         try {
-            $graphClient = new GraphGatewayClient($token, '/me/drive/root/children');
-            $drive = $graphClient->get()->getBody();
+            $graphClient = new GraphGatewayClient($token, '/me/chats/'.$request->route('chatId').'/messages');
+            $chat = $graphClient->get()->getBody();
         } catch(Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
-                'error' => true
+                'error' => true,
             ], $e->getCode() != 0 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
 
-        return response()->json($drive);
+        return response()->json($chat);
     }
 
-    public function getDriveItems(Request $request) {
+    public function sendMessages(Request $request) {
         $token = $request->header('authorization');
         $token = str_replace('Bearer ', '', $token);
 
+        $scopes = [
+            'body' => [
+                'content' => $request->input('content')
+            ]
+        ];
+
         try {
-            $graphClient = new GraphGatewayClient($token, '/me/drive/items/'.$request->route('itemId'));
-            $drive = $graphClient->get()->getBody();
+            $graphClient = new GraphGatewayClient($token, '/me/chats/'.$request->route('chatId').'/messages', $scopes);
+            $graphClient->post();
         } catch(Exception $e) {
             return response()->json([
                 'message' => $e->getMessage(),
-                'error' => true
+                'error' => true,
             ], $e->getCode() != 0 ? $e->getCode() : Response::HTTP_BAD_REQUEST);
         }
 
-        return response()->json($drive);
+        return response()->json([
+            'message' => 'You Send Message Successfully',
+            'error' => false,
+        ], Response::HTTP_CREATED);
     }
 }
