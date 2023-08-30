@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\Chat\ChatController;
+use App\Http\Controllers\Chat\MailController;
 use App\Http\Controllers\Files\DriveController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
@@ -40,6 +41,10 @@ Route::group(['prefix' => 'v1'], function() {
     Route::patch('users/{userId}', [PeopleController::class, 'update'])->name('microsoft.users.update');
     // Route::get('users/')
 
+    Route::get('mails', [MailController::class, 'index'])->name('microsoft.mails');
+    Route::get('mails/{mailId}', [MailController::class, 'show'])->name('micrososft.mails.show');
+    Route::post('mails/send', [MailController::class, 'sendMail'])->name('microsoft.mails.send');
+
     // Route Contact API
     Route::get('users/contacts', [ContactController::class, 'index'])->name('microsoft.users.contact');
 
@@ -73,6 +78,6 @@ Route::group(['prefix' => 'v1'], function() {
     Route::post('subcriptions/create', [NotificationController::class, 'createSubscriptions'])->name('microsoft.subscription.create');
 
     Route::get('me', [ProfileController::class, 'me'])->name('microsoft.me');
-    Route::get('mail', [ProfileController::class, 'mail'])->name('microsoft.mail');
-    Route::post('mail/send', [ProfileController::class, 'sendMail'])->name('microsoft.mail.send');
+    Route::get('me/mail', [ProfileController::class, 'mail'])->name('microsoft.me.mail');
+    Route::post('me/mail/send', [ProfileController::class, 'sendMail'])->name('microsoft.me.mail.send');
 });
