@@ -9,6 +9,7 @@
         "guzzlehttp/guzzle": "^7.0",
         "laravel/framework": "^10.10",
         "laravel/sanctum": "^3.2",
+        "laravel/telescope": "^4.16",
         "laravel/tinker": "^2.8",
         "microsoft/microsoft-graph": "^1.104",
         "spatie/laravel-webhook-client": "^3.2"
@@ -51,7 +52,9 @@
     },
     "extra": {
         "laravel": {
-            "dont-discover": []
+            "dont-discover": [
+                "laravel/telescope"
+            ]
         }
     },
     "config": {
