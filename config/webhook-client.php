@@ -1,5 +1,7 @@
 <?php
 
+use App\Jobs\PushNotificationJob;
+
 return [
     'configs' => [
         [
@@ -58,7 +60,7 @@ return [
              *
              * This should be set to a class that extends \Spatie\WebhookClient\Jobs\ProcessWebhookJob.
              */
-            'process_webhook_job' => '',
+            'process_webhook_job' => PushNotificationJob::class,
         ],
     ],
 
