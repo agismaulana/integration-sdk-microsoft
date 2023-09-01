@@ -10,8 +10,13 @@ use Symfony\Component\HttpFoundation\Response;
 
 class PushNotificationResource implements RespondsToWebhook
 {
+    // public function respondToValidWebhook(Request $request, WebhookConfig $config)
+    // {
+    //     return response()->json($request->input('validationToken'));
+    // }
+
     public function respondToValidWebhook(Request $request, WebhookConfig $config): Response
     {
-        return response()->json($request->input('validationToken'));
+        return response($request->input('validationToken'));
     }
 }
