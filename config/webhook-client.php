@@ -1,6 +1,8 @@
 <?php
 
+use App\Http\Resources\Webhook\PushNotificationResource;
 use App\Jobs\PushNotificationJob;
+use App\Validator\WebhookSignatureValidator;
 
 return [
     'configs' => [
@@ -20,14 +22,14 @@ return [
             /*
              * The name of the header containing the signature.
              */
-            'signature_header_name' => 'Signature',
+            'signature_header_name' => 'signature',
 
             /*
              *  This class will verify that the content of the signature header is valid.
              *
              * It should implement \Spatie\WebhookClient\SignatureValidator\SignatureValidator
              */
-            'signature_validator' => \Spatie\WebhookClient\SignatureValidator\DefaultSignatureValidator::class,
+            'signature_validator' => WebhookSignatureValidator::class,
 
             /*
              * This class determines if the webhook call should be stored and processed.
@@ -37,7 +39,7 @@ return [
             /*
              * This class determines the response on a valid webhook call.
              */
-            'webhook_response' => \Spatie\WebhookClient\WebhookResponse\DefaultRespondsTo::class,
+            'webhook_response' => PushNotificationResource::class,
 
             /*
              * The classname of the model to be used to store webhook calls. The class should

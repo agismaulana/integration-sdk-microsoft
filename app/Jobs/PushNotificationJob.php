@@ -9,21 +9,17 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Http\Request;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Spatie\WebhookClient\Jobs\ProcessWebhookJob;
 use Spatie\WebhookClient\WebhookConfig;
 use Spatie\WebhookClient\WebhookResponse\RespondsToWebhook;
 use Symfony\Component\HttpFoundation\Response;
 
-class PushNotificationJob implements ShouldQueue, RespondsToWebhook
+class PushNotificationJob extends ProcessWebhookJob implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
-    public function respondToValidWebhook(Request $request, WebhookConfig $config): Response
+    public function __invoke()
     {
-        dd($this);
-
-        return response()->json([
-            'data' => $this,
-            'error' => false,
-        ]);
+        return true;
     }
 }
