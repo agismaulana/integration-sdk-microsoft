@@ -27,7 +27,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::group(['prefix' => 'v1'], function() {
-    Route::webhooks('subsriptions/success', 'subscriptions->success');
+    Route::webhooks('subsriptions/success', 'subscriptions-success');
 
     /**
      * Users Route API
