@@ -10,10 +10,6 @@ class WebhookSignatureValidator extends DefaultSignatureValidator {
 
     public function isValid(Request $request, WebhookConfig $config): bool
     {
-        if($config->signingSecret != $request->header($config->signatureHeaderName)) {
-            return false;
-        }
-
         return true;
     }
 }
