@@ -12,12 +12,6 @@ class PushNotificationResource implements RespondsToWebhook
 {
     public function respondToValidWebhook(Request $request, WebhookConfig $config): Response
     {
-        return response()->json([
-            'data' => [
-                'header' => $request->header(),
-                'body' => $request->input(),
-            ],
-            'error' => false,
-        ]);
+        return response()->json($request->input('validationToken'));
     }
 }
