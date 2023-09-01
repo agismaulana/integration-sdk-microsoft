@@ -34,7 +34,7 @@ class NotificationController extends Controller
             $scopes = [
                 'changeType' => 'created',
                 // 'notificationUrl' => env('APP_URL')."/api/v1/subscriptions/success",
-                'notificationUrl' => "https://ms.devryuzcons.com/api/v1/webhook/subscriptions/success",
+                'notificationUrl' => "https://ms.devryuzcons.com/api/v1/subscriptions/success",
                 'resource' => $request->input('resource'),
                 // 'expirationDateTime' => date(now()->addDays(1)),
                 'expirationDateTime' => now()->addDays(1),
