@@ -1,9 +1,11 @@
 <?php
 
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\Chat\ChatController;
 use App\Http\Controllers\Chat\MailController;
 use App\Http\Controllers\Files\DriveController;
+use App\Http\Controllers\Files\FileController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Users\ContactController;
@@ -30,6 +32,17 @@ Route::group(['prefix' => 'v1'], function() {
     Route::webhooks('subscriptions/success', 'subscriptions-success');
 
     /**
+     * Schema Route API authentication
+     *
+     *
+     * */
+
+    Route::group(['prefix' => 'auth'], function() {
+        Route::post('authorize', [AuthController::class, 'auth'])->name('auth.authorize');
+        Route::post('Register', [AuthController::class, 'register'])->name('auth.register');
+    });
+
+    /**
      * Users Route API
      *
      *
@@ -44,6 +57,7 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('mails', [MailController::class, 'index'])->name('microsoft.mails');
     Route::get('mails/{mailId}', [MailController::class, 'show'])->name('micrososft.mails.show');
     Route::post('mails/send', [MailController::class, 'sendMail'])->name('microsoft.mails.send');
+    Route::post('mails/{mailId}/forward', [MailController::class, 'forward'])->name('microsoft.mails.forward');
 
     // Route Contact API
     Route::get('users/contacts', [ContactController::class, 'index'])->name('microsoft.users.contact');
@@ -62,6 +76,8 @@ Route::group(['prefix' => 'v1'], function() {
     Route::get('drive/current/items', [DriveController::class, 'itemsByCurrentRootFolder'])->name('microsoft.drive.listitemsbycurrentfolder');
     Route::get('drive/current/items/{itemId}', [DriveController::class, 'getDriveItems'])->name('microsoft.drive.current.item.detail');
 
+    Route::get('/files', [FileController::class, 'getFiles'])->name('microsoft.files');
+
     //Chat Route API
     Route::get('chats', [ChatController::class, 'index'])->name('microsoft.chat');
     Route::get('chats/{chatId}', [ChatController::class, 'show'])->name('microsoft.chat.detail');
@@ -76,6 +92,7 @@ Route::group(['prefix' => 'v1'], function() {
     //Notification Route Api
     Route::get('subcriptions', [NotificationController::class, 'listSubscriptions'])->name('microsoft.subcription');
     Route::post('subcriptions/create', [NotificationController::class, 'createSubscriptions'])->name('microsoft.subscription.create');
+    Route::get('subcriptions/{subscriptionsId}', [NotificationController::class, 'getSubscriptions'])->name('microsoft.subscription.create');
 
     Route::get('me', [ProfileController::class, 'me'])->name('microsoft.me');
     Route::get('me/mail', [ProfileController::class, 'mail'])->name('microsoft.me.mail');

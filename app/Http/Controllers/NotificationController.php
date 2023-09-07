@@ -6,6 +6,7 @@ use App\Gateway\GraphGatewayClient;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use App\Http\Controllers\BaseController as Controller;
 
 class NotificationController extends Controller
 {
@@ -57,5 +58,19 @@ class NotificationController extends Controller
             'message' => 'Subcription successfully created',
             'error' => false
         ]);
+    }
+
+    public function getSubscriptions(Request $request) {
+        try {
+            $graphClient = new GraphGatewayClient($this->getToken(), '/subscriptions/'.$request->route('subscriptionId'));
+            $subscription = $graphClient->get()->getBody();
+        } catch (Exception $e) {
+            $code = $e->getCode() !== 0 ? $e->getCode() : Response::HTTP_BAD_REQUEST;
+            return $this->sendError([
+                'message' => $e->getMessage()
+            ], $code);
+        }
+
+        return $this->sendSuccess($subscription);
     }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 
 class BaseController extends Controller
@@ -21,12 +22,15 @@ class BaseController extends Controller
 
     /**
      * This function to be set response with status success
-     * @param array $data
+     * @param array|object $data
      * @param string $code
      *
-     * @return json
+     * @return JSONResponse
      * */
-    public function sendSuccess($data = [], $code = Response::HTTP_OK) {
+    public function sendSuccess($data = [], $code = Response::HTTP_OK): JsonResponse {
+        if(gettype($data) === "object") {
+            $data = (array)$data;
+        }
         $data['error'] = false;
         return response()->json($data, $code);
     }
