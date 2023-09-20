@@ -1,15 +1,10 @@
 <?php
 
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\CalendarController;
-use App\Http\Controllers\Chat\ChatController;
 use App\Http\Controllers\Chat\MailController;
-use App\Http\Controllers\Files\DriveController;
-use App\Http\Controllers\Files\FileController;
-use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\Users\ContactController;
-use App\Http\Controllers\Users\PeopleController;
+use App\Http\Controllers\Users\CalendarController;
+use App\Http\Controllers\Users\GroupController;
+use App\Http\Controllers\Users\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -19,82 +14,42 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 |
 | Here is where you can register API routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "api" middleware group. Make something great!
+| routes are loaded by the RouteServiceProvider within a group which
+| is assigned the "api" middleware group. Enjoy building your API!
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+Route::middleware(['auth:sanctum'])->get('/user', function (Request $request) {
     return $request->user();
 });
 
 Route::group(['prefix' => 'v1'], function() {
-    Route::webhooks('subscriptions/success', 'subscriptions-success');
-
-    /**
-     * Schema Route API authentication
-     *
-     *
-     * */
-
-    Route::group(['prefix' => 'auth'], function() {
-        Route::post('authorize', [AuthController::class, 'auth'])->name('auth.authorize');
-        Route::post('Register', [AuthController::class, 'register'])->name('auth.register');
+    Route::group(['prefix' => 'auth'], function(){
+        Route::post('login', [AuthController::class, 'login']);
+        Route::post('token-microsoft', [AuthController::class, 'setMicrosoftToken'])->name('api.microsoft.token.set');
     });
 
-    /**
-     * Users Route API
-     *
-     *
-     * */
+    Route::group(['prefix' => 'users'], function() {
+        Route::get('my', [UserController::class, 'my'])->name('api.users.my');
+        Route::get('license', [UserController::class, 'license'])->name('api.users.license');
+        Route::get('organization', [UserController::class, 'organization'])->name('api.users.organization');
+        Route::get('mailboxSettings', [UserController::class, 'mailboxSettings'])->name('api.users.mailboxSettings');
+    });
 
-    // Route People API
-    Route::get('users/', [PeopleController::class, 'index'])->name('microsoft.users');
-    Route::get('users/{userId}', [PeopleController::class, 'show'])->name('microsoft.users.detail');
-    Route::patch('users/{userId}', [PeopleController::class, 'update'])->name('microsoft.users.update');
-    // Route::get('users/')
+    Route::group(['prefix' => 'calendars'], function() {
+        Route::get('/', [CalendarController::class, 'index'])->name('api.calendars');
+    });
 
-    Route::get('mails', [MailController::class, 'index'])->name('microsoft.mails');
-    Route::get('mails/{mailId}', [MailController::class, 'show'])->name('micrososft.mails.show');
-    Route::post('mails/send', [MailController::class, 'sendMail'])->name('microsoft.mails.send');
-    Route::post('mails/{mailId}/forward', [MailController::class, 'forward'])->name('microsoft.mails.forward');
+    Route::group(['prefix' => 'mails'], function() {
+        Route::get('/', [MailController::class, 'index'])->name('api.mails.index');
+        Route::get('/mailbox', [MailController::class, 'getMailBox'])->name('api.mails.mailbox.check');
+    });
 
-    // Route Contact API
-    Route::get('users/contacts', [ContactController::class, 'index'])->name('microsoft.users.contact');
-
-
-    // Calendar Route API
-    Route::get('calendar', [CalendarController::class, 'index'])->name('microsoft.calendar');
-    Route::get('calendar/{id}', [CalendarController::class, 'show'])->name('microsoft.calendar.show');
-    Route::post('calendar/create', [CalendarController::class, 'create'])->name('microsoft.calendar.create');
-    Route::patch('calendar/{id}/update', [CalendarController::class, 'update'])->name('microsoft.calendar.update');
-    Route::delete('calendar/{id}/delete', [CalendarController::class, 'delete'])->name('microsoft.calendar.delete');
-
-    // Drive Route API
-    Route::get('drive', [DriveController::class, 'index'])->name('microsoft.drive');
-    Route::get('drive/{id}', [DriveController::class, 'show'])->name('microsoft.drive.show');
-    Route::get('drive/current/items', [DriveController::class, 'itemsByCurrentRootFolder'])->name('microsoft.drive.listitemsbycurrentfolder');
-    Route::get('drive/current/items/{itemId}', [DriveController::class, 'getDriveItems'])->name('microsoft.drive.current.item.detail');
-
-    Route::get('/files', [FileController::class, 'getFiles'])->name('microsoft.files');
-
-    //Chat Route API
-    Route::get('chats', [ChatController::class, 'index'])->name('microsoft.chat');
-    Route::get('chats/{chatId}', [ChatController::class, 'show'])->name('microsoft.chat.detail');
-    Route::get('chats/{chatId}/messages', [ChatController::class, 'allMessages'])->name('microsoft.chat.user');
-    Route::post('chats/{chatId}/messages', [ChatController::class, 'sendMessages'])->name('microsoft.chat.user.send');
-    Route::patch('chats/{chatId}/messages/{messageId}', [ChatController::class, 'updateSendMessage'])->name('microsoft.chat.user.update');
-    Route::delete('users/{userId}/chats/{chatId}/messages/{messageId}', [ChatController::class, 'deleteMessage'])->name('microsoft.chat.user.delete');
-
-    // Contact Route API
-    // Route::get('/')
-
-    //Notification Route Api
-    Route::get('subcriptions', [NotificationController::class, 'listSubscriptions'])->name('microsoft.subcription');
-    Route::post('subcriptions/create', [NotificationController::class, 'createSubscriptions'])->name('microsoft.subscription.create');
-    Route::get('subcriptions/{subscriptionsId}', [NotificationController::class, 'getSubscriptions'])->name('microsoft.subscription.create');
-
-    Route::get('me', [ProfileController::class, 'me'])->name('microsoft.me');
-    Route::get('me/mail', [ProfileController::class, 'mail'])->name('microsoft.me.mail');
-    Route::post('me/mail/send', [ProfileController::class, 'sendMail'])->name('microsoft.me.mail.send');
+    Route::group(['prefix' => 'groups'], function() {
+        Route::get('/', [GroupController::class, 'index'])->name('api.group.index');
+        Route::post('/create', [GroupController::class, 'add'])->name('api.group.add');
+        Route::get('/{groupId}', [GroupController::class, 'detail'])->name('api.group.detail');
+        Route::get('/{groupId}/members', [GroupController::class, 'listMember'])->name('api.group.member');
+        Route::post('/{groupId}/members/add', [GroupController::class, 'addMember'])->name('api.group.member.add');
+    });
 });

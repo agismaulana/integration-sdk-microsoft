@@ -17,7 +17,7 @@
 
 @section('main')
 
-<a href="{{ route('web.email.create') }}">Create Email</a>
+<a href="{{ route('web.mails.create') }}">Create Email</a>
 <br>
 <div id="mail"></div>
 
@@ -33,7 +33,7 @@
             let token = sessionStorage.getItem('access_token');
 
             $.ajax({
-                url: `{{ env('APP_URL') }}/api/v1/mails`,
+                url: `{{ route('api.mails.index') }}`,
                 dataType: 'JSON',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -41,7 +41,7 @@
                 success: function(response) {
                     let html = '';
                     $.each(response.value, (key, mail) => {
-                        let route = `{{ route('web.email.show', ['id' => 'id']) }}`
+                        let route = `{{ route('web.mails.show', ['mailId' => 'id']) }}`
                         route = route.replace('id', mail.id);
                         html += `
                             <a href="${route}" class="mail-card">

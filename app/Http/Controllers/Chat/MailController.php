@@ -8,6 +8,7 @@ use App\Http\Controllers\BaseController as Controller;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Auth;
 
 use function PHPSTORM_META\map;
 
@@ -18,12 +19,14 @@ class MailController extends Controller
 
     public function __construct()
     {
-        $this->token = $this->getToken();
+        $this->token = $this->getMicrosoftToken();
     }
 
     public function index(Request $request) {
+        $microsoft_user_id = auth()->user()->MicrosoftAccount->microsoft_id ?? null;
+
         try {
-            $graphClient = new GraphGatewayClient($this->token, '/me/messages');
+            $graphClient = new GraphGatewayClient($this->token, '/users/'.$microsoft_user_id.'/messages');
             $mail = $graphClient->get()->getBody();
         } catch(Exception $e) {
             $code = $e->getCode() !== 0 ? $e->getCode() : Response::HTTP_BAD_REQUEST;
@@ -32,7 +35,9 @@ class MailController extends Controller
             ], $code);
         }
 
-        return $this->sendSuccess($mail);
+        return $this->sendSuccess([
+            'data' => $mail
+        ]);
     }
 
     public function show(Request $request) {
@@ -134,7 +139,7 @@ class MailController extends Controller
 
 
         try {
-            $graphClient = new GraphGatewayClient('/me/messages/'.$request->route('mailId').'/attachments', $scopes);
+            $graphClient = new GraphGatewayClient($this->token, '/me/messages/'.$request->route('mailId').'/attachments', $scopes);
             $graphClient->post();
         } catch(Exception $e) {
             $code = $e->getCode() !== 0 ? $e->getCode() : Response::HTTP_BAD_REQUEST;
@@ -146,5 +151,22 @@ class MailController extends Controller
         return $this->sendSuccess([
             'message' => 'Successfully add attachment mail'
         ], Response::HTTP_CREATED);
+    }
+
+    public function getMailBox() {
+        $user = auth()->user();
+        $user_microsoft = $user->MicrosoftAccount;
+
+        try {
+            $graphClient = new GraphGatewayClient($this->token, '/users/'.$user_microsoft->microsoft_id.'/mailboxsettings');
+            $mailbox = $graphClient->get()->getBody();
+        } catch(Exception $e) {
+            $code = $e->getCode() !== 0 ? $e->getCode() : Response::HTTP_BAD_REQUEST;
+            return $this->sendError([
+                'message' => $e->getMessage(),
+            ], $code);
+        }
+
+        return $this->sendSuccess($mailbox);
     }
 }

@@ -88,7 +88,7 @@ class ChatController extends Controller
     }
 
     public function updateSendMessage(Request $request) {
-        $token = $this->getToken();
+        $token = $this->getMicrosoftToken();
 
         $scopes = [
             'body' => [
@@ -110,7 +110,7 @@ class ChatController extends Controller
     }
 
     public function deleteMessage(Request $request) {
-        $token = $this->getToken();
+        $token = $this->getMicrosoftToken();
 
         try {
             $graphClient = new GraphGatewayClient($token, '/users/'.$request->route('userId').'/chats/'.$request->route('chatId').'/messages/'.$request->route('messageId').'/softDelete');

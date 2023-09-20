@@ -11,7 +11,7 @@ use Illuminate\Http\Response;
 class ContactController extends Controller
 {
     public function index(Request $request) {
-        $token = $this->getToken();
+        $token = $this->getMicrosoftToken();
 
         try {
             $graphClient = new GraphGatewayClient($token, '/me/contacts');
@@ -27,7 +27,7 @@ class ContactController extends Controller
     }
 
     public function show(Request $request) {
-        $token = $this->getToken();
+        $token = $this->getMicrosoftToken();
 
         try {
             $graphClient = new GraphGatewayClient($token, 'me/contacts/'.$request->route('contactId'));

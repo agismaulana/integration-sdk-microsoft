@@ -32,4 +32,8 @@ class MailController extends Controller
             'id' => $request->route('id')
         ]);
     }
+
+    public function checkMailbox(Request $request) {
+        return view('email.mailbox');
+    }
 }

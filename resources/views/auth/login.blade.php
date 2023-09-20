@@ -11,8 +11,10 @@
         $(() => {
             $('#login').on('click', function() {
                 $.ajax({
-                    url: `{{ env('APP_URL') }}/api/v1/auth/authorize`,
+                    url: `{{ env('APP_URL') }}/login`,
+                    // url: `{{ env('APP_URL') }}/api/v1/auth/authorize`,
                     data: {
+                        '_token': `{{ csrf_token() }}`,
                         'email': $('input[name="email"]').val(),
                         'password': $('input[name="password"]').val()
                     },

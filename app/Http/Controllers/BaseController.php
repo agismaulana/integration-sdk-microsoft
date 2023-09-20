@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Session;
 
 class BaseController extends Controller
 {
@@ -18,6 +19,10 @@ class BaseController extends Controller
         $token = str_replace('Bearer ', '', $token);
 
         return $token;
+    }
+
+    public function getMicrosoftToken() {
+        return session()->get('microsoft_access_token');
     }
 
     /**

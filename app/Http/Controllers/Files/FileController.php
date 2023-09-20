@@ -13,7 +13,7 @@ class FileController extends Controller
 {
     protected $token;
     public function __construct() {
-        $this->token = $this->getToken();
+        $this->token = $this->getMicrosoftToken();
     }
 
     public function getFiles(Request $request):JsonResponse

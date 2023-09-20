@@ -32,7 +32,7 @@ class PeopleController extends Controller
     }
 
     public function show(Request $request) {
-        $token = $this->getToken();
+        $token = $this->getMicrosoftToken();
 
         try {
             $graphClient = new GraphGatewayClient($token, '/users/'.$request->route('userId'));
@@ -48,7 +48,7 @@ class PeopleController extends Controller
     }
 
     public function update(Request $request) {
-        $token = $this->getToken();
+        $token = $this->getMicrosoftToken();
 
         $scopes = $request->all();
 
